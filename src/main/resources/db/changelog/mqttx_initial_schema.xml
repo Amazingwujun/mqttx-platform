@@ -1,0 +1,99 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:pro="http://www.liquibase.org/xml/ns/pro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-3.8.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+    <!--  初始化数据库 schema  -->
+    <changeSet id="0" author="Jun">
+        <createTable tableName="t_user" remarks="平台用户">
+            <column autoIncrement="true" name="id" type="INT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="mobile" type="CHAR(11)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="password" type="CHAR(60)">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValue="" name="avatar" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValue="" name="nickname" type="VARCHAR(20)">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValue="" name="email" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValueComputed="CURRENT_TIMESTAMP_UPDATE" name="update_time" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValueComputed="CURRENT_TIMESTAMP" name="create_time" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValueBoolean="false" name="del_status" type="BIT(1)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="t_role" remarks="角色">
+            <column autoIncrement="true" name="id" type="INT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column defaultValue="" name="name" type="VARCHAR(20)"/>
+            <column defaultValueComputed="CURRENT_TIMESTAMP" name="update_time" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValueComputed="CURRENT_TIMESTAMP" name="create_time" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="t_user_role_bind" remarks="用户-角色绑定关系">
+            <column autoIncrement="true" name="id" type="INT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="user_id" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="role_id" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValueComputed="CURRENT_TIMESTAMP" name="update_time" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValueComputed="CURRENT_TIMESTAMP" name="create_time" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="t_permission" remarks="权限">
+            <column autoIncrement="true" name="id" type="INT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column defaultValue="" name="name" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValueComputed="CURRENT_TIMESTAMP" name="create_time" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="t_role_permission_bind" remarks="角色-权限绑定关系">
+            <column autoIncrement="true" name="id" type="INT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="role_id" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="permission_id" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValueComputed="CURRENT_TIMESTAMP" name="update_time" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValueComputed="CURRENT_TIMESTAMP" name="create_time" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        
+        <sqlFile path="db/changelog/init.sql"/>
+    </changeSet>
+
+</databaseChangeLog>

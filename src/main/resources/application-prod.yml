@@ -1,0 +1,7 @@
+spring:
+  datasource:
+    url:
+    username:
+    password:
+  redis:
+    host: localhost
