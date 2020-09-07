@@ -4,6 +4,7 @@ import com.jun.mqttxplatform.entity.Response;
 import com.jun.mqttxplatform.entity.dto.UserDTO;
 import com.jun.mqttxplatform.entity.vo.UserVO;
 import com.jun.mqttxplatform.service.IUserService;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -29,6 +30,7 @@ public class UserController {
     }
 
     @GetMapping("/userList")
+    @PreAuthorize("hasAuthority('mqttx:admin_query')")
     public Response<List<UserVO>> getUserList() {
         return userService.getUserList();
     }

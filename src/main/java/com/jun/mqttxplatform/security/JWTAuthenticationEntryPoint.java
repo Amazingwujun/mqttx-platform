@@ -1,7 +1,6 @@
 package com.jun.mqttxplatform.security;
 
 import com.alibaba.fastjson.JSON;
-import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.jun.mqttxplatform.entity.Response;
 import org.springframework.http.MediaType;
@@ -35,7 +34,6 @@ public class JWTAuthenticationEntryPoint implements AuthenticationEntryPoint {
         }else {
             result = Response.fail("令牌错误");
         }
-
 
         PrintWriter writer = response.getWriter();
         writer.write(JSON.toJSONString(result));

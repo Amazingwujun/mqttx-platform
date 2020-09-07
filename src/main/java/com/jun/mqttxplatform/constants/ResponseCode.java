@@ -11,13 +11,14 @@ public enum ResponseCode {
     SUCCESS(200, "操作成功"),
 
     BAD_REQUEST(400, "请求参数异常"),
-    UNAUTHORIZED(401, "quan"),
+    UNAUTHORIZED(401, "用户未认证"),
     HTTP_METHOD_ERR(402, "请求方法错误"),
-    DUPLICATE_DATA_ERR(403, "权限不足"),
+    ACCESS_FORBIDDEN(403, "权限不足"),
     INFO_NOT_FOUND_ERR(404, "找不到您要的信息"),
-    LOGIN_ERR(405, "用户名或密码错误"),
-    SERVICE_BUSY_ERR(406, "服务繁忙，请稍后再试"),
-    ILLEGAL_ARGS_ERR(407, "参数错误"),
+    SIGN_IN_ERR(405, "用户名或密码错误"),
+    DUPLICATE_DATA_ERR(406, "对象已存在"),
+    SERVICE_BUSY_ERR(450, "操作失败"),
+
 
     SERVER_ERR(500, "服务忙");
 

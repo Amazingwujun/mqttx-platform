@@ -4,6 +4,7 @@ import com.jun.mqttxplatform.entity.Response;
 import com.jun.mqttxplatform.exception.GlobalException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.validation.BindException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
@@ -114,6 +115,11 @@ public class GlobalExceptionHandler {
         log.info(e.getMessage(), e);
 
         return Response.fail(BAD_REQUEST);
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public Response<Void> accessDeniedException(AccessDeniedException e) {
+        return Response.fail(ACCESS_FORBIDDEN);
     }
 
     /**

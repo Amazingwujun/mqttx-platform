@@ -11,11 +11,11 @@ public class UserDTO {
     private Integer id;
 
     @NotBlank(message = "手机号不能为空")
-    @Pattern(regexp = "1[0-9]{10}",message = "手机号码格式错误")
+    @Pattern(regexp = "1[0-9]{10}", message = "手机号码格式错误")
     private String mobile;
 
     @NotBlank(message = "密码不能为空")
-    @Pattern(regexp = "^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{6,20}$",message = "密码格式异常")
+    @Pattern(regexp = "^(?=.*[a-zA-Z])(?=.*\\d)[\\s\\S]{8,20}$", message = "密码格式异常")
     private String password;
 
     private String nickname;

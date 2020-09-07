@@ -3,11 +3,11 @@ package com.jun.mqttxplatform.security;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
-import com.jun.mqttxplatform.entity.po.Permission;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -17,7 +17,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -30,9 +29,9 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
 
     private JWTVerifier jwtVerifier;
 
-    private JWTAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+    private AuthenticationEntryPoint jwtAuthenticationEntryPoint;
 
-    public JWTAuthenticationFilter(JWTVerifier jwtVerifier, JWTAuthenticationEntryPoint jwtAuthenticationEntryPoint) {
+    public JWTAuthenticationFilter(JWTVerifier jwtVerifier, AuthenticationEntryPoint jwtAuthenticationEntryPoint) {
         this.jwtVerifier = jwtVerifier;
         this.jwtAuthenticationEntryPoint = jwtAuthenticationEntryPoint;
     }
@@ -48,14 +47,14 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
         try {
             DecodedJWT verify = jwtVerifier.verify(token);
             Integer userId = verify.getClaim("userId").asInt();
-            List<Permission> permissions = verify.getClaim("permissions").asList(Permission.class);
+            List<String> permissions = verify.getClaim("permissions").asList(String.class);
 
             UsernamePasswordAuthenticationToken authenticationToken;
             if (CollectionUtils.isEmpty(permissions)) {
                 authenticationToken = new UsernamePasswordAuthenticationToken(userId, null, null);
             } else {
                 List<SimpleGrantedAuthority> grantedAuthorities = permissions.stream()
-                        .map(permission -> new SimpleGrantedAuthority(permission.getName()))
+                        .map(SimpleGrantedAuthority::new)
                         .collect(Collectors.toList());
                 authenticationToken = new UsernamePasswordAuthenticationToken(userId, null, grantedAuthorities);
             }

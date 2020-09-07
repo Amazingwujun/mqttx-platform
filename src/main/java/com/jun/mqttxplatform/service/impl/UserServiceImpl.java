@@ -1,7 +1,9 @@
 package com.jun.mqttxplatform.service.impl;
 
 import com.auth0.jwt.JWT;
+import com.auth0.jwt.JWTCreator;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.jun.mqttxplatform.constants.ResponseCode;
 import com.jun.mqttxplatform.dao.UserMapper;
 import com.jun.mqttxplatform.entity.Response;
 import com.jun.mqttxplatform.entity.dto.UserDTO;
@@ -11,7 +13,7 @@ import com.jun.mqttxplatform.service.IUserService;
 import com.jun.mqttxplatform.utils.BeanUtils;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import java.util.Date;
@@ -40,10 +42,12 @@ public class UserServiceImpl implements IUserService {
         if (user == null) {
             return Response.fail("用户不存在");
         }
-
         if (!passwordEncoder.matches(userDTO.getPassword(), user.getPassword())) {
             return Response.fail("用户名或密码错误");
         }
+
+        //获取用户权限
+        List<String> userPermissions = userMapper.selectUserPermissions(user.getId());
 
         UserVO userVO = UserVO.builder()
                 .id(user.getId())
@@ -51,27 +55,22 @@ public class UserServiceImpl implements IUserService {
                 .avatar(user.getAvatar())
                 .nickname(user.getNickname())
                 .email(user.getEmail())
-                .token(genToken(user.getId()))
+                .token(genToken(user.getId(), null, userPermissions))
                 .build();
         return Response.ok(userVO);
     }
 
     @Override
-    @Transactional
     public Response<UserVO> signUp(UserDTO userDTO) {
-        String mobile = userDTO.getMobile();
         if (StringUtils.isEmpty(userDTO.getNickname())) {
             userDTO.setNickname("悟空");
-        }
-        if (userMapper.selectByMobile(mobile) != null) {
-            return Response.fail("用户已存在");
         }
 
         User user = BeanUtils.bean2bean(userDTO, User.class);
         user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
-        userMapper.insertSelective(user);
 
-        return Response.ok();
+        return userMapper.insertSelective(user) > 0 ?
+                Response.ok() : Response.fail(ResponseCode.DUPLICATE_DATA_ERR.getCode(), "手机号已被注册");
     }
 
     @Override
@@ -95,14 +94,22 @@ public class UserServiceImpl implements IUserService {
     /**
      * 生成令牌
      *
-     * @param userId 客户ID
+     * @param userId      客户ID
+     * @param roles       角色列表
+     * @param permissions 权限列表
      * @return JWT
      */
-    private String genToken(Integer userId) {
-        return JWT.create()
+    private String genToken(Integer userId, List<String> roles, List<String> permissions) {
+        JWTCreator.Builder builder = JWT.create()
                 .withIssuer("mqttx")
                 .withClaim("userId", userId)
-                .withExpiresAt(new Date(System.currentTimeMillis() + 3 * 24 * 60 * 60 * 1000))
-                .sign(algorithm);
+                .withExpiresAt(new Date(System.currentTimeMillis() + 3 * 24 * 60 * 60 * 1000));
+        if (!CollectionUtils.isEmpty(roles)) {
+            builder.withClaim("roles", roles);
+        }
+        if (!CollectionUtils.isEmpty(permissions)) {
+            builder.withClaim("permissions", permissions);
+        }
+        return builder.sign(algorithm);
     }
 }

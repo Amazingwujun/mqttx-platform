@@ -1,5 +1,7 @@
 <?xml version="1.1" encoding="UTF-8" standalone="no"?>
-<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:pro="http://www.liquibase.org/xml/ns/pro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-3.8.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
     <!--  初始化数据库 schema  -->
     <changeSet id="0" author="Jun">
         <createTable tableName="t_user" remarks="平台用户">
@@ -64,10 +66,10 @@
         </createTable>
 
         <createTable tableName="t_permission" remarks="权限">
-            <column autoIncrement="true" name="id" type="INT">
-                <constraints nullable="false" primaryKey="true"/>
+            <column name="name" type="VARCHAR(50)">
+                <constraints nullable="false"/>
             </column>
-            <column defaultValue="" name="name" type="VARCHAR(50)">
+            <column defaultValue="" name="remark" type="VARCHAR(100)">
                 <constraints nullable="false"/>
             </column>
             <column defaultValueComputed="CURRENT_TIMESTAMP" name="create_time" type="datetime">
@@ -82,7 +84,7 @@
             <column name="role_id" type="INT">
                 <constraints nullable="false"/>
             </column>
-            <column name="permission_id" type="INT">
+            <column name="permission_name" type="VARCHAR(50)" remarks="权限名">
                 <constraints nullable="false"/>
             </column>
             <column defaultValueComputed="CURRENT_TIMESTAMP" name="update_time" type="datetime">
@@ -92,7 +94,53 @@
                 <constraints nullable="false"/>
             </column>
         </createTable>
-        
+
+        <createTable tableName="t_topic" remarks="主题">
+            <column autoIncrement="true" name="id" type="INT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="name" type="VARCHAR(50)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column defaultValue="" name="remark" type="VARCHAR(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValueBoolean="false" name="del_status" type="BIT(1)">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValueComputed="CURRENT_TIMESTAMP" name="update_time" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValueComputed="CURRENT_TIMESTAMP" name="create_time" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="t_user_topic_bind">
+            <column autoIncrement="true" name="id" type="INT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="user_id" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="topic_id" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValueNumeric="0" name="rw"
+                    remarks="共两个bit，0b01_允许订阅不允许发布, 0b10_允许发布不允许订阅, 0b11_允许发布和订阅, 0b00_发布订阅都被禁止" type="TINYINT(3)">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValueComputed="CURRENT_TIMESTAMP" name="update_time" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValueComputed="CURRENT_TIMESTAMP" name="create_time" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <createIndex indexName="idx_user_id" tableName="t_user_topic_bind">
+            <column name="user_id"/>
+        </createIndex>
+
         <sqlFile path="db/changelog/init.sql"/>
     </changeSet>
 

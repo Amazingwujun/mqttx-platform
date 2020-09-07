@@ -9,5 +9,9 @@ spring:
   redis:
     host: localhost
 
+logging:
+  level:
+    com.jun.mqttxplatform.dao: debug
+
 biz:
   jwt-key: "(*&*(015KJ36/~.m.fsd(*^*&^kjfdDkjGFDhfd&^%^&+++r3="

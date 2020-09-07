@@ -22,4 +22,6 @@ public interface UserMapper {
     int updateByPrimaryKeySelective(User record);
 
     List<User> getUserList();
+
+    List<String> selectUserPermissions(Integer id);
 }

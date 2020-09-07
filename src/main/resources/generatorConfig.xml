@@ -59,7 +59,7 @@
         </javaClientGenerator>
 
 
-        <table tableName="t_user" domainObjectName="User"
+        <table tableName="t_topic" domainObjectName="Topic"
                enableInsert="true"
                enableDeleteByPrimaryKey="false"
                enableCountByExample="false"
